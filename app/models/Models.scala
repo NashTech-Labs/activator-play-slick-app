@@ -1,7 +1,5 @@
 package models
 
-import java.sql.Date
+import java.util.Date
 
-case class Knol(name: String, email: String, companyName: String, id: Option[Int] = None)
-
-case class KnolX(topic: String, date: Date, knolId: Int, id: Option[Int] = None)
+case class Employee(name: String, email: String, dob: Date, companyName: String, id: Option[Int] = None)
