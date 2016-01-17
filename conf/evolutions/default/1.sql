@@ -1,5 +1,5 @@
 # --- !Ups
-CREATE TABLE "employee"("id" int PRIMARY KEY auto_increment,"name" varchar(200) , "email" varchar(200) , "dob" date ,"company_name" varchar);
+CREATE TABLE "employee"("id" SERIAL PRIMARY KEY ,"name" varchar(200) , "email" varchar(200) , "dob" date ,"company_name" varchar);
 INSERT INTO "employee" values (1,'test', 'test@knoldus.com','2016-10-12','knoldus');
 # --- !Downs
 

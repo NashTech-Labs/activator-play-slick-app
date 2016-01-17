@@ -22,6 +22,8 @@ class EmployeeRepository @Inject() (protected val dbConfigProvider: DatabaseConf
   def delete(id: Int): Future[Int] = db.run { empTableQuery.filter(_.id === id).delete }
 
   def getAll(): Future[List[Employee]] = db.run { empTableQuery.to[List].result }
+  
+  def ddl = empTableQuery.schema
 
 }
 
@@ -31,7 +33,6 @@ private[repo] trait EmployeeTable extends ColumnTypeMapper { self: HasDatabaseCo
   import DateMapper._
 
   private[EmployeeTable] class EmployeeTable(tag: Tag) extends Table[Employee](tag, "employee") {
-
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
     val name: Rep[String] = column[String]("name", O.SqlType("VARCHAR(200)"))
     val email: Rep[String] = column[String]("email", O.SqlType("VARCHAR(200)"))
@@ -47,3 +48,4 @@ private[repo] trait EmployeeTable extends ColumnTypeMapper { self: HasDatabaseCo
   lazy protected val empTableQueryInc = empTableQuery returning empTableQuery.map(_.id)
 
 }
+

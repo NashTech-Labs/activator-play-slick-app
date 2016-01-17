@@ -12,6 +12,11 @@ class Application @Inject() (employeeRepo: EmployeeRepository) extends Controlle
 
   def index = Action.async {
     employeeRepo.getAll.map { emps => Ok(emps.map(_.name).toString) }
+
+  }
+
+  def list = Action {
+    Ok("")
   }
 
 }
