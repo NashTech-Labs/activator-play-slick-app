@@ -1,21 +1,31 @@
 package controllers
 
-import play.api._
+
 import play.api.mvc._
 import repo.EmployeeRepository
 import com.google.inject.Inject
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import models.Employee
-import java.util.Date
 
-class Application @Inject() (employeeRepo: EmployeeRepository) extends Controller {
+import utils.JsonHelper
 
-  def index = Action.async {
-    employeeRepo.getAll.map { emps => Ok(emps.map(_.name).toString) }
+import views.html
 
+class Application @Inject() (employeeRepo: EmployeeRepository) extends Controller with JsonHelper{
+
+  def index = Action {Ok(html.index())}
+
+
+
+  def list = Action.async {
+    employeeRepo.getAll.map { emps =>
+      Ok(write(("data" ->emps)))
+    }
   }
 
-  def list = Action {
+
+  def create=Action{ implicit request =>
+    val body = request.body.asFormUrlEncoded
+    println(body)
     Ok("")
   }
 

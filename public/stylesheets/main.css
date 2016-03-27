@@ -1,0 +1,23 @@
+html {
+  height: 100%;
+}
+html body {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+html body .container-fluid.body-content {
+  width: 100%;
+  overflow-y: auto;
+}
+header {
+    background-color: #286090;
+    min-height: 60px;
+    width: 100%;
+}
+footer {
+    background-color: #4C4;
+    min-height: 30px;
+    width: 100%;
+}

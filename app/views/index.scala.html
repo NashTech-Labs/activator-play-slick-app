@@ -1,7 +1,64 @@
-@(message: String)
 
-@main("Welcome to Play") {
+@main("Reactive-Web-App") {
 
-    @play20.welcome(message)
+<table id="empDataTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Date of Birth</th>
+        <th>Position</th>
+        <th>Company Name</th>
+    </tr>
+    </thead>
+</table>
 
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#empModal">
+   Add Employee
+</button>
+
+<!-- Modal -->
+<form id="empForm" name="empForm" >
+<div class="modal fade" id="empModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Employee Details</h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="empName">Name</label>
+                        <input type="text" class="form-control" id="empName" name="empName" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="empEmail">Email address</label>
+                        <input type="email" class="form-control" id="empEmail" name="empEmail" placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <label for="empPosition">Position</label>
+                        <input type="text" class="form-control" id="empPosition"  name="empPosition" placeholder="Position">
+                    </div>
+                    <div class="form-group">
+                        <label for="empCompanyName">Company Name</label>
+                        <input type="text" class="form-control" id="empCompanyName"  name="empCompanyName" placeholder="Company Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empDOB">Date Of Birth</label>
+                        <input type="date" class="form-control" id="empDOB" name="empDOB"  placeholder="Date Of Birth">
+                    </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>
+                <button type="submit" class="btn btn-primary"   >Save </button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
 }
+
