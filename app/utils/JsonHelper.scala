@@ -2,9 +2,12 @@ package utils
 
 import java.text.SimpleDateFormat
 
+import models.Emp
 import org.json4s._
 import org.json4s.native.JsonMethods.{parse => jParser}
 import org.json4s.native.Serialization.{write => jWrite}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 
 trait JsonHelper{
@@ -21,6 +24,11 @@ trait JsonHelper{
     case JNothing =>""
     case data     => data.extract[String]
   }
+
+  implicit val locationReads: Reads[Emp] = (
+    (JsPath \ "empName").read[String] and
+      (JsPath \ "empEmail").read[String]
+    )(Emp.apply _)
 
 }
 

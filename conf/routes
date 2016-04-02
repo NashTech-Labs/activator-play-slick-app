@@ -5,9 +5,13 @@
 # Home page
 GET     /                           controllers.Application.index
 
-GET     /list                           controllers.Application.list
+GET     /emp/list                           controllers.EmployeeController.list
 
-POST     /create                           controllers.Application.create
+POST     /emp/create                           controllers.EmployeeController.create
+
+GET     /emp/edit                           controllers.EmployeeController.edit(empId: Int)
+
+GET     /emp/delete                           controllers.EmployeeController.delete(empId: Int)
 
 
 
