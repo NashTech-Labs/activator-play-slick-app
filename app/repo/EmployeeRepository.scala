@@ -22,6 +22,8 @@ class EmployeeRepository @Inject() (protected val dbConfigProvider: DatabaseConf
   def delete(id: Int): Future[Int] = db.run { empTableQuery.filter(_.id === id).delete }
 
   def getAll(): Future[List[Employee]] = db.run { empTableQuery.to[List].result }
+
+  def getById(empId: Int): Future[Option[Employee]] = db.run { empTableQuery.filter(_.id === empId).result.headOption }
   
   def ddl = empTableQuery.schema
 

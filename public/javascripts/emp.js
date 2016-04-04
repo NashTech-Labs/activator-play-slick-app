@@ -26,7 +26,7 @@ $(document).ready(function() {
 
     var tableEmp = $('#empDataTable').DataTable();
 
-    // Delete employee
+    // Delete employee event
     $("body").on( 'click', '.remove-button', function () {
        var currentRow = $(this);
        var employeeId = $(this).attr('id').trim();
@@ -34,16 +34,21 @@ $(document).ready(function() {
               url: "/emp/delete",
               type: "GET",
               data: {empId: employeeId},
-              success:function(){
-                       tableEmp.row(currentRow.parents('tr') ).remove().draw();
+              success:function(result){
+                        if(result.status == "success") {
+                           showSuccessAlert(result.message);
+                           tableEmp.row(currentRow.parents('tr') ).remove().draw();
+                       } else {
+                           showErrorAlert("Oops, something wrong :(");
+                       }
                  },
               error: function(){
-                        alert("Error");
+                        showErrorAlert("Oops, something wrong :(");
                 }
            });
      });
 
-     // Edit employee
+     // Edit employee event
      $("body").on( 'click', '.edit-button', function () {
             var employeeId = $(this).attr('id').trim();
              $.ajax({
@@ -51,38 +56,39 @@ $(document).ready(function() {
                    type: "GET",
                    data: {empId: employeeId},
                    success:function(data){
-                   console.log(data);
                              $('#empEditModal').modal('show');
                              $.each(data, function(name, val){
                                 $('#empEditForm input[name="'+name+'"]').val(val);
                              });
                       },
                    error: function(){
-                             alert("Error");
+                             showErrorAlert("Oops, something wrong :(");
                      }
                 });
           });
 
-} );
 
 $('#myModal').on('shown.bs.modal', function () {
   $('#myInput').focus()
 });
 
-$(document).ready(function() {
-
 // Show success alert message
 var showSuccessAlert = function (message) {
-    $('#le-alert').toggleClass('noneDisplay');
-    $('#le-alert').addClass('in');
-    $('#alertContent').html(message);
+    $('#successAlert').toggleClass('noneDisplay in');
+    $('#successAlert #alertContent').html(message);
 }
 
-// Event on close of alert
+// Show error alert message
+var showErrorAlert = function (message) {
+    $('#errorAlert').toggleClass('noneDisplay in');
+    $('#errorAlert #alertContent').html(message);
+}
+
+// Events on close of alert
  $('.close').click(function () {
-      $(this).parent().removeClass('in');
-      $('#le-alert').toggleClass('noneDisplay');
-    });
+      $(this).parent().toggleClass('in noneDisplay');
+  });
+
 
 // Convert form data in JSON format
 $.fn.serializeObject = function() {
@@ -101,7 +107,7 @@ $.fn.serializeObject = function() {
             return JSON.stringify(o);
         };
 
-// Handling employee form submission
+// Handling form submission for create new employee
       $('#empForm').on('submit', function(e){
          var formData = $("#empForm").serializeObject();
           e.preventDefault();
@@ -116,15 +122,45 @@ $.fn.serializeObject = function() {
                          $('#empModal').modal('hide');
                          showSuccessAlert(data.message);
                    } else {
-
+                        $('#empModal').modal('hide');
+                        showErrorAlert("Oops, something wrong :(");
                    }
                 },
                 error: function(){
-                    console.log("Booo, something wrong :(");
+                    $('#empModal').modal('hide');
+                    showErrorAlert("Oops, something wrong :(");
                 }
 
             });
             return false;
       });
+
+// Handling form submission for update employee
+$('#empEditForm').on('submit', function(e){
+               var formData = $("#empEditForm").serializeObject();
+                e.preventDefault();
+                 $.ajax({
+                      url: "/emp/update",
+                      type: "POST",
+                      contentType: "application/json; charset=utf-8",
+                      dataType: "json",
+                      data: formData,
+                      success:function(data){
+                         if(data.status == "success") {
+                               $('#empEditModal').modal('hide');
+                               showSuccessAlert(data.message);
+                         } else {
+                            $('#empEditModal').modal('hide');
+                            showErrorAlert(data.message);
+                         }
+                      },
+                      error: function(){
+                          $('#empEditModal').modal('hide');
+                          showErrorAlert("Oops, something wrong :(");
+                      }
+
+                  });
+                  return false;
+            });
 
 });

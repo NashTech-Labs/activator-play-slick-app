@@ -10,7 +10,7 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 
-trait JsonHelper{
+trait JsonHelper {
 
   implicit val formats = new org.json4s.DefaultFormats {
     override def dateFormatter: SimpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy")
@@ -21,14 +21,22 @@ trait JsonHelper{
   protected def parse(value: String): JValue = jParser(value)
 
   implicit protected def extractOrEmptyString(json: JValue): String = json match {
-    case JNothing =>""
-    case data     => data.extract[String]
+    case JNothing => ""
+    case data => data.extract[String]
   }
 
   implicit val locationReads: Reads[Emp] = (
     (JsPath \ "empName").read[String] and
       (JsPath \ "empEmail").read[String]
-    )(Emp.apply _)
+    ) (Emp.apply _)
+
+  protected def successJsonMessage(msg: String) = {
+    Json.obj("status" -> "success", "message" -> msg)
+  }
+
+  protected def errorJsonMessage(msg: String) = {
+    Json.obj("status" -> "error", "message" -> msg)
+  }
 
 }
 

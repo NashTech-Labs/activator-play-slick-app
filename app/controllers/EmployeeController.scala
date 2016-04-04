@@ -8,10 +8,16 @@ import repo.EmployeeRepository
 import utils.JsonHelper
 import models.Emp
 
+import scala.concurrent._
+
 /**
   * Handles all requests related to employee
   */
 class EmployeeController @Inject()(employeeRepo: EmployeeRepository) extends Controller with JsonHelper {
+
+  private def recoverBlock: PartialFunction[Throwable, Result] = {
+    case t: TimeoutException => Ok(Json.obj("status" -> "error", "message" -> "Oops, Something wrong!!!"))
+  }
 
   /**
     * Handles request for getting all employee from the database
@@ -19,7 +25,7 @@ class EmployeeController @Inject()(employeeRepo: EmployeeRepository) extends Con
   def list = Action.async {
     employeeRepo.getAll.map { empList =>
       Ok(write(("data" -> empList)))
-    }
+    }.recover(recoverBlock)
   }
 
   /**
@@ -29,10 +35,10 @@ class EmployeeController @Inject()(employeeRepo: EmployeeRepository) extends Con
     val empResult = request.body.validate[Emp]
     empResult.fold(
       errors => {
-        BadRequest(Json.obj("status" ->"error"))
+        BadRequest(errorJsonMessage("Oops, Something wrong!!!"))
       },
       place => {
-        Ok(Json.obj("status" ->"success", "message" -> "Employee has been successfully added."))
+        Ok(successJsonMessage("Employee has been successfully added."))
       }
     )
   }
@@ -40,17 +46,41 @@ class EmployeeController @Inject()(employeeRepo: EmployeeRepository) extends Con
   /**
     * Handles request for deletion of existing employee by employee_id
     */
-  def delete(empId: Int) = Action { request =>
-    println(s"Deleting employee: id = $empId")
-    Ok(Json.obj("status" ->"Employee has been successfully deleted."))
+  def delete(empId: Int) = Action.async { request =>
+    employeeRepo.delete(empId).map { result =>
+      if (result > 0)
+        Ok(successJsonMessage("Employee has been successfully deleted."))
+      else
+        Ok(errorJsonMessage("Oops, Something wrong!!!"))
+    }.recover {
+      recoverBlock
+    }
   }
 
   /**
     * Handles request for get employee details for editing
     */
-  def edit(empId: Int) = Action { request =>
-    println(s"Editing employee: id = $empId")
-    Ok(Json.obj("empName" -> "OK", "empEmail" -> "s@gmail.com"))
+  def edit(empId: Int) = Action.async { request =>
+    employeeRepo.getById(empId).map { emp =>
+      Ok(Json.obj("empName" -> "OK", "empEmail" -> "s@gmail.com"))
+    }.recover {
+      recoverBlock
+    }
+  }
+
+  /**
+    * Handles request for update existing employee
+    */
+  def update = Action(parse.json) { request =>
+    val empResult = request.body.validate[Emp]
+    empResult.fold(
+      errors => {
+        BadRequest(errorJsonMessage("Oops, Something wrong!!!"))
+      },
+      place => {
+        Ok(successJsonMessage("Employee has been successfully updated."))
+      }
+    )
   }
 
 }

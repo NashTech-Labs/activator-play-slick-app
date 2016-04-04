@@ -22,6 +22,12 @@ class EmployeeRepositorySpec extends Specification {
       result.head.name === "test"
     }
 
+    "get single rows" in new WithApplication {
+      val result = await(empRepo.getById(1))
+      result.isDefined === true
+      result.get.name === "test"
+    }
+
     "insert a row" in new WithApplication {
       val knolId = await(empRepo.insert(Employee("sky", "sky@knoldus.com", new Date, "knoldus","Senior Consultant")))
       knolId === 2

@@ -11,6 +11,8 @@ POST     /emp/create                           controllers.EmployeeController.cr
 
 GET     /emp/edit                           controllers.EmployeeController.edit(empId: Int)
 
+POST     /emp/update                           controllers.EmployeeController.update
+
 GET     /emp/delete                           controllers.EmployeeController.delete(empId: Int)
 
 
