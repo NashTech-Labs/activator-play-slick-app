@@ -20,23 +20,15 @@ trait JsonHelper {
 
   protected def parse(value: String): JValue = jParser(value)
 
-  implicit protected def extractOrEmptyString(json: JValue): String = json match {
+  implicit  def extractOrEmptyString(json: JValue): String = json match {
     case JNothing => ""
     case data => data.extract[String]
   }
 
-  implicit val locationReads: Reads[Emp] = (
-    (JsPath \ "empName").read[String] and
-      (JsPath \ "empEmail").read[String]
-    ) (Emp.apply _)
+   def successMessage(msg: String) = write(Map("status" -> "success", "message" -> msg))
 
-  protected def successJsonMessage(msg: String) = {
-    Json.obj("status" -> "success", "message" -> msg)
-  }
 
-  protected def errorJsonMessage(msg: String) = {
-    Json.obj("status" -> "error", "message" -> msg)
-  }
+   def errorMessage(msg: String) = write(Map("status" -> "error", "message" -> msg))
 
 }
 

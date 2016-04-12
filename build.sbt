@@ -14,7 +14,9 @@ libraryDependencies ++= Seq(
   "com.h2database"    % 	   "h2"                    %   "1.4.187" ,
   "org.postgresql"   %      "postgresql" % "9.4-1206-jdbc4",
   "org.json4s"      %%     "json4s-native" %  "3.3.0",
-   specs2 % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test",
+  "org.mockito" % "mockito-core" % "1.10.19" % "test"
+
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"

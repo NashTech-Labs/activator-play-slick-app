@@ -3,56 +3,43 @@ package controllers
 import com.google.inject.Inject
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc._
-import play.api.libs.json._
-import repo.EmployeeRepository
-import utils.JsonHelper
-import models.Emp
 
-import scala.concurrent._
+import service.{Response, EmployeeService}
+import utils.{LoggerApi, Constants, JsonHelper}
+
 
 /**
   * Handles all requests related to employee
   */
-class EmployeeController @Inject()(employeeRepo: EmployeeRepository) extends Controller with JsonHelper {
+class EmployeeController @Inject()(service: EmployeeService) extends Controller with JsonHelper with LoggerApi{
+
+  import Constants._
 
   private def recoverBlock: PartialFunction[Throwable, Result] = {
-    case t: TimeoutException => Ok(Json.obj("status" -> "error", "message" -> "Oops, Something wrong!!!"))
+    case t: Exception => Ok(write(Response(ERROR, Map(), "Oops, Something wrong!!!")))
   }
 
   /**
     * Handles request for getting all employee from the database
     */
   def list = Action.async {
-    employeeRepo.getAll.map { empList =>
-      Ok(write(("data" -> empList)))
-    }.recover(recoverBlock)
+    service.getAll().map { res => Ok(res) }.recover(recoverBlock)
   }
 
   /**
     * Handles request for creation of new employee
     */
-  def create = Action(parse.json) { request =>
-    val empResult = request.body.validate[Emp]
-    empResult.fold(
-      errors => {
-        BadRequest(errorJsonMessage("Oops, Something wrong!!!"))
-      },
-      place => {
-        Ok(successJsonMessage("Employee has been successfully added."))
-      }
-    )
+  def create = Action.async { request =>
+    val json = request.body.asJson.toString
+    info("Employee Json  " + json)
+    service.create(json).map { res => Ok(res) }.recover(recoverBlock)
   }
 
   /**
     * Handles request for deletion of existing employee by employee_id
     */
   def delete(empId: Int) = Action.async { request =>
-    employeeRepo.delete(empId).map { result =>
-      if (result > 0)
-        Ok(successJsonMessage("Employee has been successfully deleted."))
-      else
-        Ok(errorJsonMessage("Oops, Something wrong!!!"))
-    }.recover {
+    service.delete(empId).map { res => Ok(res) }.recover {
       recoverBlock
     }
   }
@@ -61,9 +48,7 @@ class EmployeeController @Inject()(employeeRepo: EmployeeRepository) extends Con
     * Handles request for get employee details for editing
     */
   def edit(empId: Int) = Action.async { request =>
-    employeeRepo.getById(empId).map { emp =>
-      Ok(Json.obj("empName" -> "OK", "empEmail" -> "s@gmail.com"))
-    }.recover {
+    service.getById(empId).map { res => Ok(res) }.recover {
       recoverBlock
     }
   }
@@ -71,17 +56,11 @@ class EmployeeController @Inject()(employeeRepo: EmployeeRepository) extends Con
   /**
     * Handles request for update existing employee
     */
-  def update = Action(parse.json) { request =>
-    val empResult = request.body.validate[Emp]
-    empResult.fold(
-      errors => {
-        BadRequest(errorJsonMessage("Oops, Something wrong!!!"))
-      },
-      place => {
-        Ok(successJsonMessage("Employee has been successfully updated."))
-      }
-    )
+  def update = Action.async { request =>
+    val json = request.body.asJson.toString
+    service.update(json).map { res => Ok(res) }.recover(recoverBlock)
   }
+
 
 }
 
