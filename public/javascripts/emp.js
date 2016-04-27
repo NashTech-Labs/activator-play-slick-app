@@ -11,7 +11,6 @@ $(document).ready(function() {
          "columns": [
                     { "data": "name" },
                     { "data": "email" },
-                    { "data": "dob" },
                     { "data": "position" },
                     { "data": "companyName" },
                     { data: "id" ,

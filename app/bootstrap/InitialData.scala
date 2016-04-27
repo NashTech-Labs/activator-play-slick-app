@@ -29,9 +29,9 @@ class InitialData @Inject() (employeeRepo: EmployeeRepository) {
 
 object Data {
   val employees = List(
-    Employee("Satendra", "satendra@knoldus.com", new Date, "Knoldus","Senior Consultant"),
-    Employee("Mayank", "mayank@knoldus.com", new Date, "knoldus","Senior Consultant"),
-    Employee("Sushil", "sushil@knoldus.com", new Date, "knoldus","Consultant"),
-    Employee("Narayan", "narayan@knoldus.com", new Date, "knoldus","Consultant"),
-    Employee("Himanshu", "himanshu@knoldus.com", new Date, "knoldus","Senior Consultant"))
+    Employee("Satendra", "satendra@knoldus.com", "Knoldus","Senior Consultant"),
+    Employee("Mayank", "mayank@knoldus.com",  "knoldus","Senior Consultant"),
+    Employee("Sushil", "sushil@knoldus.com",  "knoldus","Consultant"),
+    Employee("Narayan", "narayan@knoldus.com",  "knoldus","Consultant"),
+    Employee("Himanshu", "himanshu@knoldus.com",  "knoldus","Senior Consultant"))
 }

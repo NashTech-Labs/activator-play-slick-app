@@ -1,23 +1,18 @@
 <configuration>
-  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+
+  <conversionRule conversionWord="coloredLevel"  converterClass="play.api.Logger$ColoredLevel" />
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%highlight([%level]) - [%date] - [%logger] %msg%n</pattern>
+      <pattern>%coloredLevel - %blue([%logger]) - %message%n%xException</pattern>
     </encoder>
   </appender>
-  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <prudent>true</prudent>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logs/logger-%d{yyyy-MM-dd}.log
-      </fileNamePattern>
-      <maxHistory>30</maxHistory>
-    </rollingPolicy>
-    <append>true</append>
-    <encoder>
-      <pattern>%highlight([%level]) - [%date] - [%logger] %msg%n</pattern>
-    </encoder>
-  </appender>
-  <logger level="info">
-    <appender-ref ref="CONSOLE" />
+
+  <logger name="application" level="INFO" />
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />
-  </logger>
+  </root>
+
 </configuration>

@@ -40,10 +40,8 @@ private[repo] trait EmployeeTable extends ColumnTypeMapper { self: HasDatabaseCo
     val email: Rep[String] = column[String]("email", O.SqlType("VARCHAR(200)"))
     val companyName: Rep[String] = column[String]("company_name")
     val position: Rep[String] = column[String]("position")
-    val dob = column[Date]("dob")
     def emailUnique = index("email_unique_key", email, unique = true)
-
-    def * = (name, email, dob, companyName,position, id) <> (Employee.tupled, Employee.unapply)
+    def * = (name, email, companyName,position, id.?) <> (Employee.tupled, Employee.unapply)
   }
 
   lazy protected val empTableQuery = TableQuery[EmployeeTable]

@@ -2,34 +2,47 @@ package controllers
 
 import com.google.inject.Inject
 import models.Employee
+import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.JsError
+import play.api.libs.json.Json._
+
 import play.api.mvc._
 import repo.EmployeeRepository
-import utils.{LoggerApi, Constants, JsonHelper}
+import utils.Constants
+import utils.JsonFormat._
+
 import scala.concurrent.Future
 
 /**
   * Handles all requests related to employee
   */
-class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Controller with JsonHelper with LoggerApi {
+class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Controller  {
 
   import Constants._
 
+  val logger = Logger(this.getClass())
   /**
     * Handles request for getting all employee from the database
     */
   def list() = Action.async {
-    empRepository.getAll().map { res => Ok(write(Response(SUCCESS, res, ""))) }
+
+    empRepository.getAll().map { res =>
+      logger.debug("Emp list " + res)
+      Ok(obj("status" -> SUCCESS, "data" ->res,"msg"-> "Getting Employee list successfully"))
+    }
   }
 
   /**
     * Handles request for creation of new employee
     */
-  def create() = Action.async(jsonParser) { request =>
-    info("Employee Json ===> " + request.body)
-    request.body.fold(error => Future.successful(error), { emp =>
-      empRepository.insert(emp).map { res => Response(status = SUCCESS, msg = "Employee has been added successfully.") }
-    }).map { res => Ok(write(res)) }
+  def create() = Action.async(parse.json) { request =>
+    logger.info("Employee Json ===> " + request.body)
+    request.body.validate[Employee].fold(error => Future.successful(BadRequest(JsError.toJson(error))), { emp =>
+      empRepository.insert(emp).map { res =>
+        Ok(obj("status" -> SUCCESS, "data"-> "",  "msg"-> "Employee has been added successfully."))
+      }
+    })
   }
 
   /**
@@ -37,7 +50,7 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Co
     */
   def delete(empId: Int) = Action.async { request =>
     empRepository.delete(empId).map { _ =>
-      Ok(write(Response(status = SUCCESS, msg = "Employee has been deleted successfully.")))
+      Ok(obj("status" ->SUCCESS, "data" ->"", "msg" -> "Employee has been deleted successfully."))
     }
   }
 
@@ -46,35 +59,22 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Co
     */
   def edit(empId: Int): Action[AnyContent] = Action.async { request =>
     empRepository.getById(empId).map { empOpt =>
-      empOpt.fold(Response(status = ERROR, msg = "Employee does not exist."))(emp => Response(SUCCESS, emp, "Got Employee successfully"))
-    }.map { res => Ok(write(res)) }
+      empOpt.fold(Ok(obj("status" -> ERROR, "data"-> "", "msg" ->"Employee does not exist.")))(emp =>Ok(
+        obj("status" ->SUCCESS, "data" ->emp, "msg" ->"Got Employee successfully")))
+    }
   }
 
   /**
     * Handles request for update existing employee
     */
-  def update: Action[Either[Response, Employee]] = Action.async(jsonParser) { request =>
-    println("Employee Json ===> " + request.body)
-    val res: Future[Response] = request.body.fold(error => Future.successful(error), { emp =>
-      empRepository.update(emp).map { res => Response(status = SUCCESS, msg = "Employee has been updated successfully.") }
+  def update = Action.async(parse.json) { request =>
+    logger.info("Employee Json ===> " + request.body)
+    request.body.validate[Employee].fold(error => Future.successful(BadRequest(JsError.toJson(error))), { emp =>
+      empRepository.update(emp).map { res => Ok(obj("status" ->SUCCESS, "data" ->"", "msg" -> "Employee has been updated successfully.")) }
     })
-    res.map { r => Ok(write(r)) }
-
   }
-
-
-  val jsonParser: BodyParser[Either[Response, Employee]] = parse.tolerantText.map(text => parser(text))
-
-  def parser(request: String): Either[Response, Employee] =
-    try
-      Right(parse(request).extract[Employee])
-    catch {
-      case exception: Exception =>
-        error(s"Error in  json parsing ", exception)
-        Left(Response(ERROR, Map(), INVALID_REQUEST_JSON))
-    }
 
 }
 
-case class Response(status: String, data: AnyRef = "{}", msg: String)
+
 
