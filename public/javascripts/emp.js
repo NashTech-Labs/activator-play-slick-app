@@ -1,3 +1,7 @@
+
+var SUCCESS = 'success';
+var ERROR = 'error';
+
 $(document).ready(function() {
     $('#empDataTable').DataTable( {
         "ajax": {
@@ -34,9 +38,10 @@ $(document).ready(function() {
               url: "/emp/delete",
               type: "GET",
               data: {empId: employeeId},
-              success:function(result){
-                        if(result.status == "success") {
-                           showSuccessAlert(result.message);
+              success:function(response){
+               var data = $.parseJSON(response);
+                        if(data.status == SUCCESS) {
+                           showSuccessAlert(data.msg);
                            tableEmp.row(currentRow.parents('tr') ).remove().draw();
                        } else {
                            showErrorAlert("Oops, something wrong :(");
@@ -47,6 +52,7 @@ $(document).ready(function() {
                 }
            });
      });
+     
 
      // Edit employee event
      $("body").on( 'click', '.edit-button', function () {
@@ -55,10 +61,11 @@ $(document).ready(function() {
                    url: "/emp/edit",
                    type: "GET",
                    data: {empId: employeeId},
-                   success:function(data){
+                   success:function(response){
+                             var jsonData = $.parseJSON(response);
                              $('#empEditModal').modal('show');
-                             $.each(data, function(name, val){
-                                $('#empEditForm input[name="'+name+'"]').val(val);
+                             $.each(jsonData.data, function(key, value){
+                                $('#empEditForm input[name="'+key+'"]').val(value);
                              });
                       },
                    error: function(){
@@ -145,13 +152,13 @@ $('#empEditForm').on('submit', function(e){
                       contentType: "application/json; charset=utf-8",
                       dataType: "json",
                       data: formData,
-                      success:function(data){
-                         if(data.status == "success") {
+                      success:function(response){
+                         if(response.status == SUCCESS) {
                                $('#empEditModal').modal('hide');
-                               showSuccessAlert(data.message);
+                               showSuccessAlert(response.msg);
                          } else {
                             $('#empEditModal').modal('hide');
-                            showErrorAlert(data.message);
+                            showErrorAlert(response.message);
                          }
                       },
                       error: function(){
