@@ -1,36 +1,31 @@
 package controllers
 
 
-import akka.util.ByteString
-import org.scalatest.mock.MockitoSugar
-import play.api.libs.streams.Accumulator
-import play.api.mvc._
+import java.util.Date
 
-import play.api.test.FakeRequest
-import service.EmployeeService
+import models.Employee
+import org.specs2.mock.Mockito
+import play.api.libs.iteratee.Iteratee
+import play.api.mvc._
+import play.api.test._
+import repo.EmployeeRepository
+import utils.JsonHelper
 
 import scala.concurrent.Future
 
-import org.mockito.Mockito._
-import play.api.test.Helpers._
-import org.scalatestplus.play._
+class EmployeeControllerSpec  extends PlaySpecification with Mockito with Results with JsonHelper{
 
-import play.api.mvc._
-import play.api.test._
-
-class EmployeeControllerSpec  extends PlaySpec with MockitoSugar with Results{
-
-
-  val mockedService = mock[EmployeeService]
-  val employeeController= new EmployeeController(mockedService)
+  val mockedRepo = mock[EmployeeRepository]
+  val employeeController= new EmployeeController(mockedRepo)
 
   "EmployeeController " should {
 
     "create a employee" in {
-     when( mockedService.create("") ) thenReturn( Future.successful(""))
-      val result: Future[ Result] = employeeController.create().apply(FakeRequest())
-      val body = contentAsString(result)
-      body mustBe "OK"
+      val emp=Employee("sky", "sky@knoldus.com", new Date("1989-01-19"), "knoldus","Senior Consultant")
+      mockedRepo.insert(emp)  returns Future.successful(1)
+      val result: Future[Result] = employeeController.create().apply(FakeRequest().withBody(write(emp))).run
+      val resultAsString = contentAsString(result)
+      resultAsString === """{"status":"error","data":{},"msg":"Invalid  json format"}"""
     }
   }
 
