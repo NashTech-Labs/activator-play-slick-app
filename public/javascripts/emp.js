@@ -31,26 +31,31 @@ $(document).ready(function() {
 
     // Delete employee event
     $("body").on( 'click', '.remove-button', function () {
-       var currentRow = $(this);
-       var employeeId = $(this).attr('id').trim();
-        $.ajax({
-              url: "/emp/delete",
-              type: "GET",
-              data: {empId: employeeId},
-              success:function(response){
-               var data = $.parseJSON(response);
-                        if(data.status == SUCCESS) {
-                           showSuccessAlert(data.msg);
-                           tableEmp.row(currentRow.parents('tr') ).remove().draw();
-                       } else {
-                           showErrorAlert("Oops, something wrong :(");
+        var currentRow = $(this);
+        var employeeId = $(this).attr('id').trim();
+         bootbox.confirm("Are you sure?", function(result) {
+            if(result) {
+                    $.ajax({
+                     url: "/emp/delete",
+                     type: "GET",
+                     data: {empId: employeeId},
+                     success:function(response){
+                               if(response.status == SUCCESS) {
+                                  showSuccessAlert(response.msg);
+                                  tableEmp.row(currentRow.parents('tr') ).remove().draw();
+                              } else {
+                                  showErrorAlert("Oops, something wrong :(");
+                              }
+                        },
+                     error: function(){
+                          showErrorAlert("Oops, something wrong :(");
                        }
-                 },
-              error: function(){
-                        showErrorAlert("Oops, something wrong :(");
-                }
-           });
-     });
+                  });
+            } else {
+               //
+              }
+         });
+    });
      
 
      // Edit employee event
@@ -61,9 +66,8 @@ $(document).ready(function() {
                    type: "GET",
                    data: {empId: employeeId},
                    success:function(response){
-                             var jsonData = $.parseJSON(response);
                              $('#empEditModal').modal('show');
-                             $.each(jsonData.data, function(key, value){
+                             $.each(response.data, function(key, value){
                                 $('#empEditForm input[name="'+key+'"]').val(value);
                              });
                       },
@@ -74,27 +78,19 @@ $(document).ready(function() {
           });
 
 
-$('#myModal').on('shown.bs.modal', function () {
-  $('#myInput').focus()
+$('#empModal').on('shown.bs.modal', function () {
+  $('#empForm').trigger("reset");
 });
 
 // Show success alert message
 var showSuccessAlert = function (message) {
-    $('#successAlert').toggleClass('noneDisplay in');
-    $('#successAlert #alertContent').html(message);
+   	$.toaster({ priority : 'success', title : 'Success', message : message});
 }
 
 // Show error alert message
 var showErrorAlert = function (message) {
-    $('#errorAlert').toggleClass('noneDisplay in');
-    $('#errorAlert #alertContent').html(message);
+    $.toaster({ priority : 'danger', title : 'Error', message : message});
 }
-
-// Events on close of alert
- $('.close').click(function () {
-      $(this).parent().toggleClass('in noneDisplay');
-  });
-
 
 // Convert form data in JSON format
 $.fn.serializeObject = function() {
@@ -107,7 +103,11 @@ $.fn.serializeObject = function() {
                         }
                         o[this.name].push(this.value || '');
                     } else {
+                          if(this.name == 'id') {
+                             o[this.name] = parseInt(this.value) || 0;
+                          } else {
                          o[this.name] = this.value || '';
+                         }
                     }
                });
             return JSON.stringify(o);
@@ -116,6 +116,7 @@ $.fn.serializeObject = function() {
 // Handling form submission for create new employee
       $('#empForm').on('submit', function(e){
          var formData = $("#empForm").serializeObject();
+         var empTable = $('#empDataTable').dataTable();
           e.preventDefault();
            $.ajax({
                 url: "/emp/create",
@@ -123,13 +124,16 @@ $.fn.serializeObject = function() {
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: formData,
-                success:function(data){
-                   if(data.status == "success") {
+                success:function(response){
+                   if(response.status == "success") {
                          $('#empModal').modal('hide');
-                         showSuccessAlert(data.message);
+                         var newEmp = jQuery.parseJSON(formData);
+                         newEmp['id'] = response.data;
+                         empTable.fnAddData([newEmp]);
+                         showSuccessAlert(response.msg);
                    } else {
                         $('#empModal').modal('hide');
-                        showErrorAlert("Oops, something wrong :(");
+                        showErrorAlert(response.msg);
                    }
                 },
                 error: function(){
@@ -154,10 +158,11 @@ $('#empEditForm').on('submit', function(e){
                       success:function(response){
                          if(response.status == SUCCESS) {
                                $('#empEditModal').modal('hide');
-                               showSuccessAlert(response.msg);
+                               $('#empDataTable').DataTable().ajax.reload();
+                               showSuccessAlert(response.msg)
                          } else {
                             $('#empEditModal').modal('hide');
-                            showErrorAlert(response.message);
+                            showErrorAlert(response.msg);
                          }
                       },
                       error: function(){

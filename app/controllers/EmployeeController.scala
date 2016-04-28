@@ -4,9 +4,8 @@ import com.google.inject.Inject
 import models.Employee
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.JsError
+import play.api.libs.json.{JsError, JsValue, Json}
 import play.api.libs.json.Json._
-
 import play.api.mvc._
 import repo.EmployeeRepository
 import utils.Constants
@@ -17,19 +16,24 @@ import scala.concurrent.Future
 /**
   * Handles all requests related to employee
   */
-class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Controller  {
+class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Controller {
 
   import Constants._
 
   val logger = Logger(this.getClass())
+
+  private def successResponse(data: JsValue, message: String) = {
+    obj("status" -> SUCCESS, "data" -> data, "msg" -> message)
+  }
+
   /**
     * Handles request for getting all employee from the database
     */
   def list() = Action.async {
 
     empRepository.getAll().map { res =>
-      logger.debug("Emp list " + res)
-      Ok(obj("status" -> SUCCESS, "data" ->res,"msg"-> "Getting Employee list successfully"))
+      logger.debug("Emp list: " + res)
+      Ok(successResponse(Json.toJson(res), "Got Employee list successfully"))
     }
   }
 
@@ -39,8 +43,8 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Co
   def create() = Action.async(parse.json) { request =>
     logger.info("Employee Json ===> " + request.body)
     request.body.validate[Employee].fold(error => Future.successful(BadRequest(JsError.toJson(error))), { emp =>
-      empRepository.insert(emp).map { res =>
-        Ok(obj("status" -> SUCCESS, "data"-> "",  "msg"-> "Employee has been added successfully."))
+      empRepository.insert(emp).map { createdEmpId =>
+        Ok(successResponse(Json.toJson(createdEmpId), "Employee has been created successfully."))
       }
     })
   }
@@ -50,7 +54,7 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Co
     */
   def delete(empId: Int) = Action.async { request =>
     empRepository.delete(empId).map { _ =>
-      Ok(obj("status" ->SUCCESS, "data" ->"", "msg" -> "Employee has been deleted successfully."))
+      Ok(successResponse(Json.toJson(""), "Employee has been deleted successfully."))
     }
   }
 
@@ -59,8 +63,8 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Co
     */
   def edit(empId: Int): Action[AnyContent] = Action.async { request =>
     empRepository.getById(empId).map { empOpt =>
-      empOpt.fold(Ok(obj("status" -> ERROR, "data"-> "", "msg" ->"Employee does not exist.")))(emp =>Ok(
-        obj("status" ->SUCCESS, "data" ->emp, "msg" ->"Got Employee successfully")))
+      empOpt.fold(Ok(obj("status" -> ERROR, "data" -> "", "msg" -> "Employee does not exist.")))(emp => Ok(
+        successResponse(Json.toJson(emp), "Got Employee successfully")))
     }
   }
 
@@ -70,7 +74,7 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Co
   def update = Action.async(parse.json) { request =>
     logger.info("Employee Json ===> " + request.body)
     request.body.validate[Employee].fold(error => Future.successful(BadRequest(JsError.toJson(error))), { emp =>
-      empRepository.update(emp).map { res => Ok(obj("status" ->SUCCESS, "data" ->"", "msg" -> "Employee has been updated successfully.")) }
+      empRepository.update(emp).map { res => Ok(successResponse(Json.toJson(""), "Employee has been updated successfully.")) }
     })
   }
 
