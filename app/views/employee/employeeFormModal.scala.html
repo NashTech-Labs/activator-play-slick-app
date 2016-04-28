@@ -1,0 +1,48 @@
+
+@(param: Any)
+
+<!-- Button trigger modal -->
+<button style="padding: 5px 29px !important;" type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#empModal">
+    Add Employee
+</button>
+
+<!-- Employee Form Modal -->
+<form id="empForm" role="form">
+    <div class="modal fade" id="empModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Employee Details</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="empName">Name</label>
+                        <input type="text" class="form-control" id="empName" name="name" placeholder="Name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empEmail">Email address</label>
+                        <input type="email" class="form-control" id="empEmail" name="email" placeholder="Email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empPosition">Position</label>
+                        <input type="text" class="form-control" id="empPosition"  name="position" placeholder="Position" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empCompanyName">Company Name</label>
+                        <input type="text" class="form-control" id="empCompanyName"  name="companyName" placeholder="Company Name" required>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>
+                    <button id="submit" type="submit" class="btn btn-primary"   >Save </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

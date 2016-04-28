@@ -5,5 +5,17 @@
 # Home page
 GET     /                           controllers.Application.index
 
+GET     /emp/list                           controllers.EmployeeController.list
+
+POST     /emp/create                           controllers.EmployeeController.create
+
+GET     /emp/edit                           controllers.EmployeeController.edit(empId: Int)
+
+POST     /emp/update                           controllers.EmployeeController.update
+
+GET     /emp/delete                           controllers.EmployeeController.delete(empId: Int)
+
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

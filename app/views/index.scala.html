@@ -1,7 +1,16 @@
-@(message: String)
 
-@main("Welcome to Play") {
+@import views.html.employee._
 
-    @play20.welcome(message)
+@main("Reactive-Web-App") {
+
+<!-- Populate employee table -->
+@employeeList(" ")
+
+<!-- Populate employee form modal -->
+@employeeFormModal(" ")
+
+<!-- Populate employee edit form modal -->
+@editEmployeeModal(" ")
 
 }
+

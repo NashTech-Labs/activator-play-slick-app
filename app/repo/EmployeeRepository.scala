@@ -22,6 +22,8 @@ class EmployeeRepository @Inject() (protected val dbConfigProvider: DatabaseConf
   def delete(id: Int): Future[Int] = db.run { empTableQuery.filter(_.id === id).delete }
 
   def getAll(): Future[List[Employee]] = db.run { empTableQuery.to[List].result }
+
+  def getById(empId: Int): Future[Option[Employee]] = db.run { empTableQuery.filter(_.id === empId).result.headOption }
   
   def ddl = empTableQuery.schema
 
@@ -37,10 +39,9 @@ private[repo] trait EmployeeTable extends ColumnTypeMapper { self: HasDatabaseCo
     val name: Rep[String] = column[String]("name", O.SqlType("VARCHAR(200)"))
     val email: Rep[String] = column[String]("email", O.SqlType("VARCHAR(200)"))
     val companyName: Rep[String] = column[String]("company_name")
-    val dob = column[Date]("dob")
+    val position: Rep[String] = column[String]("position")
     def emailUnique = index("email_unique_key", email, unique = true)
-
-    def * = (name, email, dob, companyName, id.?) <> (Employee.tupled, Employee.unapply)
+    def * = (name, email, companyName,position, id.?) <> (Employee.tupled, Employee.unapply)
   }
 
   lazy protected val empTableQuery = TableQuery[EmployeeTable]

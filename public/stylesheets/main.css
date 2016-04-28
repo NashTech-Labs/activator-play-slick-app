@@ -1,0 +1,46 @@
+html {
+  height: 100%;
+}
+
+html body {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+html body .container-fluid.body-content {
+  width: 100%;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+header {
+    background-color: #286090;
+    min-height: 60px;
+    width: 100%;
+}
+
+footer {
+    background-color: #4C4;
+    min-height: 30px;
+    width: 100%;
+}
+
+.cursorPointer {
+	cursor: pointer;
+}
+
+.remove-button {
+    color: #c50909;
+    padding-left: 27px;
+}
+
+.edit-button {
+    color: #035C04;
+    padding-left: 27px;
+}
+
+.noneDisplay {
+    display: none;
+}
