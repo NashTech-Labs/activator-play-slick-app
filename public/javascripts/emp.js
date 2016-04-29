@@ -2,6 +2,8 @@
 var SUCCESS = 'success';
 var ERROR = 'error';
 
+var serverErrorMessage = 'Oops, something wrong :(';
+
 $(document).ready(function() {
     $('#empDataTable').DataTable( {
         "ajax": {
@@ -44,11 +46,11 @@ $(document).ready(function() {
                                   showSuccessAlert(response.msg);
                                   tableEmp.row(currentRow.parents('tr') ).remove().draw();
                               } else {
-                                  showErrorAlert("Oops, something wrong :(");
+                                  showErrorAlert(serverErrorMessage);
                               }
                         },
                      error: function(){
-                          showErrorAlert("Oops, something wrong :(");
+                          showErrorAlert(serverErrorMessage);
                        }
                   });
             } else {
@@ -72,7 +74,7 @@ $(document).ready(function() {
                              });
                       },
                    error: function(){
-                             showErrorAlert("Oops, something wrong :(");
+                             showErrorAlert(serverErrorMessage);
                      }
                 });
           });
@@ -128,7 +130,7 @@ $.fn.serializeObject = function() {
                    if(response.status == "success") {
                          $('#empModal').modal('hide');
                          var newEmp = jQuery.parseJSON(formData);
-                         newEmp['id'] = response.data;
+                         newEmp['id'] = response.data['id'];
                          empTable.fnAddData([newEmp]);
                          showSuccessAlert(response.msg);
                    } else {
@@ -138,7 +140,7 @@ $.fn.serializeObject = function() {
                 },
                 error: function(){
                     $('#empModal').modal('hide');
-                    showErrorAlert("Oops, something wrong :(");
+                    showErrorAlert(serverErrorMessage);
                 }
 
             });
@@ -167,7 +169,7 @@ $('#empEditForm').on('submit', function(e){
                       },
                       error: function(){
                           $('#empEditModal').modal('hide');
-                          showErrorAlert("Oops, something wrong :(");
+                          showErrorAlert(serverErrorMessage);
                       }
 
                   });

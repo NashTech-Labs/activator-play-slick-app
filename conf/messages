@@ -1,0 +1,7 @@
+
+emp.success.empList=Got Employee list successfully.
+emp.error.empNotExist=Employee does not exist.
+
+emp.success.created=Employee has been created successfully.
+emp.success.updated=Employee has been updated successfully.
+emp.success.deleted=Employee has been deleted successfully.
