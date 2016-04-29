@@ -25,7 +25,9 @@ $(document).ready(function() {
                                    return '<i id=" ' + data +' " class="remove-button glyphicon glyphicon-trash cursorPointer"></i>';
                                }
                      }
-
+                ],
+                 "aoColumnDefs": [
+                          { 'bSortable': false, 'aTargets': [ 4, 5 ] }
                 ]
     } );
 
