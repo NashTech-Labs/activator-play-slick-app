@@ -22,8 +22,9 @@ Run the app using Postgres database:
 
      $ ./activator 'run   -Dconfig.file=conf/postgres.conf'
     
-##All the screens :
-
+-----------------------------------------------------------------------
+###All the Screens :-
+-----------------------------------------------------------------------
 ### Home Page
 
 ![alt tag](/public/images/homepage.png)
