@@ -16,7 +16,7 @@ Clone and run the app(default database is H2):
     
  Run the all unit test:
 
-     $ ./activator run
+     $ ./activator test
     
 Run the app using Postgres database:
 
