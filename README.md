@@ -1,30 +1,28 @@
 #activator-play-slick-app
 
-This is an activator project providing a seed for starting with Play & Slick, how to write unit test and how to use mocking for unit testing.
-
-This repository displays a basic example of using Play 2.5.x with scala and slick. It also demonstrates the use of evolution in Play 2.5.x .
+This is an activator project providing a seed for starting with Play 2.5.x & Slick, how to write unit test and how to use mocking for unit testing. It also demonstrates the use of evolution in Play 2.5.x .
 
 
+-----------------------------------------------------------------------
 ###Instructions :-
+-----------------------------------------------------------------------
+Clone and run the app(default database is H2):
 
-
-- Clone and run the app(default database is H2):
-
-    $ git clone git@github.com:knoldus/activator-play-slick-app.git
-    $ cd activator-play-slick-app
-    $ ./activator run
+     $ git clone git@github.com:knoldus/activator-play-slick-app.git
+     $ cd activator-play-slick-app
+     $ ./activator run
     
 ![alt tag](/public/images/evolutions.png)
     
-- Run the all unit test:
+ Run the all unit test:
 
-    $ ./activator test
+     $ ./activator run
     
-- Run the app using Postgres database:
+Run the app using Postgres database:
 
-    $ ./activator 'run   -Dconfig.file=conf/postgres.conf'
+     $ ./activator 'run   -Dconfig.file=conf/postgres.conf'
     
-All the screens :
+##All the screens :
 
 ### Home Page
 
