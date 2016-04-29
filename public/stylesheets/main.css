@@ -41,6 +41,6 @@ footer {
     padding-left: 27px;
 }
 
-.noneDisplay {
-    display: none;
+.sorting_disabled {
+  width: 70px !important;
 }

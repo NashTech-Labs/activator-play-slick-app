@@ -3,7 +3,9 @@ package controllers
 import com.google.inject.Inject
 import models.Employee
 import play.api.Logger
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json._
 import play.api.libs.json.{JsError, JsValue, Json}
@@ -17,7 +19,7 @@ import scala.concurrent.Future
 /**
   * Handles all requests related to employee
   */
-class EmployeeController @Inject()(empRepository: EmployeeRepository, val messagesApi: MessagesApi) extends Controller with I18nSupport {
+class EmployeeController @Inject()(empRepository: EmployeeRepository) extends Controller {
 
   import Constants._
 
