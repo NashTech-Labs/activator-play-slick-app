@@ -23,14 +23,6 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository, val messag
 
   val logger = Logger(this.getClass())
 
-  private def successResponse(data: JsValue, message: String) = {
-    obj("status" -> SUCCESS, "data" -> data, "msg" -> message)
-  }
-
-  private def errorResponse(data: JsValue, message: String) = {
-    obj("status" -> ERROR, "data" -> data, "msg" -> message)
-  }
-
   /**
     * Handles request for getting all employee from the database
     */
@@ -68,8 +60,12 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository, val messag
   def edit(empId: Int): Action[AnyContent] = Action.async { request =>
     empRepository.getById(empId).map { empOpt =>
       empOpt.fold(Ok(errorResponse(Json.toJson("{}"), Messages("emp.error.empNotExist"))))(emp => Ok(
-        successResponse(Json.toJson(emp), Messages("emp.success.empList"))))
+        successResponse(Json.toJson(emp), Messages("emp.success.employee"))))
     }
+  }
+
+  private def errorResponse(data: JsValue, message: String) = {
+    obj("status" -> ERROR, "data" -> data, "msg" -> message)
   }
 
   /**
@@ -80,6 +76,10 @@ class EmployeeController @Inject()(empRepository: EmployeeRepository, val messag
     request.body.validate[Employee].fold(error => Future.successful(BadRequest(JsError.toJson(error))), { emp =>
       empRepository.update(emp).map { res => Ok(successResponse(Json.toJson("{}"), Messages("emp.success.updated"))) }
     })
+  }
+
+  private def successResponse(data: JsValue, message: String) = {
+    obj("status" -> SUCCESS, "data" -> data, "msg" -> message)
   }
 
 }

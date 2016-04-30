@@ -1,5 +1,6 @@
 
-emp.success.empList=Got Employee list successfully.
+emp.success.empList=Getting Employee list successfully.
+emp.success.employee=Getting Employee successfully.
 emp.error.empNotExist=Employee does not exist.
 
 emp.success.created=Employee has been created successfully.
