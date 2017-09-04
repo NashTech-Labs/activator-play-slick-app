@@ -4,14 +4,14 @@ import javax.inject.{Inject, Singleton}
 
 import models.Employee
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.driver.JdbcProfile
+import slick.jdbc.JdbcProfile
 
 import scala.concurrent.Future
 
 @Singleton()
 class EmployeeRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends EmployeeTable with HasDatabaseConfigProvider[JdbcProfile] {
 
-  import driver.api._
+  import profile.api._
 
   def insert(employee: Employee): Future[Int] = db.run {
     empTableQueryInc += employee
@@ -44,7 +44,7 @@ class EmployeeRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
 private[repo] trait EmployeeTable {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
-  import driver.api._
+  import profile.api._
 
   lazy protected val empTableQuery = TableQuery[EmployeeTable]
   lazy protected val empTableQueryInc = empTableQuery returning empTableQuery.map(_.id)

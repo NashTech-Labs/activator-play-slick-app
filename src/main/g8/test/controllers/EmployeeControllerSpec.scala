@@ -2,70 +2,67 @@ package controllers
 
 
 import models.Employee
-import org.specs2.mock.Mockito
-import play.api.Environment
-import play.api.i18n.{DefaultLangs, DefaultMessagesApi}
-import play.api.libs.json.Json
-import play.api.mvc._
-import play.api.test._
 import repo.EmployeeRepository
 import utils.JsonFormat._
 
+import org.specs2.mock.Mockito
+
+import play.api.test.FakeRequest
+import play.api.test.PlaySpecification
+import play.api.test.WithApplication
+
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class EmployeeControllerSpec extends PlaySpecification with Mockito with Results {
 
   implicit val mockedRepo: EmployeeRepository = mock[EmployeeRepository]
 
+  val testController = new EmployeeController()
+
 
   "EmployeeController " should {
 
-    "create a employee" in new WithEmpApplication() {
-      val emp = Employee("sky", "sky@knoldus.com", "knoldus", "Senior Consultant")
+    "create a employee" in new WithApplication() {
+      val emp = Employee("bob", "bob@xyz.com", "knoldus", "Senior Consultant")
       mockedRepo.insert(emp) returns Future.successful(1)
       val result = employeeController.create().apply(FakeRequest().withBody(Json.toJson(emp)))
       val resultAsString = contentAsString(result)
-      resultAsString === """{"status":"success","data":{"id":1},"msg":"Employee has been created successfully."}"""
+      resultAsString === """{"status":"success","data":{"id":1}}"""
     }
 
-    "update a employee" in new WithEmpApplication() {
-      val updatedEmp = Employee("Satendra", "sky@knoldus.com", "knoldus", "Senior Consultant", Some(1))
+    "update a employee" in new WithApplication() {
+      val updatedEmp = Employee("Satendra", "bob@xyz.com", "knoldus", "Senior Consultant", Some(1))
       mockedRepo.update(updatedEmp) returns Future.successful(1)
 
       val result = employeeController.update().apply(FakeRequest().withBody(Json.toJson(updatedEmp)))
       val resultAsString = contentAsString(result)
-      resultAsString === """{"status":"success","data":"{}","msg":"Employee has been updated successfully."}"""
+      resultAsString === """{"status":"success","data":"{}"}"""
     }
 
-    "edit a employee" in new WithEmpApplication() {
-      val emp = Employee("sky", "sky@knoldus.com", "knoldus", "Senior Consultant", Some(1))
+    "edit a employee" in new WithApplication() {
+      val emp = Employee("bob", "bob@xyz.com", "knoldus", "Senior Consultant", Some(1))
       mockedRepo.getById(1) returns Future.successful(Some(emp))
       val result = employeeController.edit(1).apply(FakeRequest())
       val resultAsString = contentAsString(result)
-      resultAsString === """{"status":"success","data":{"name":"sky","email":"sky@knoldus.com","companyName":"knoldus","position":"Senior Consultant","id":1},"msg":"Getting Employee successfully."}"""
+      resultAsString === """{"status":"success","data":{"name":"bob","email":"bob@xyz.com","companyName":"knoldus","position":"Senior Consultant","id":1}}"""
     }
 
-    "delete a employee" in new WithEmpApplication() {
+    "delete a employee" in new WithApplication() {
       mockedRepo.delete(1) returns Future.successful(1)
       val result = employeeController.delete(1).apply(FakeRequest())
       val resultAsString = contentAsString(result)
-      resultAsString === """{"status":"success","data":"{}","msg":"Employee has been deleted successfully."}"""
+      resultAsString === """{"status":"success","data":"{}"}"""
     }
 
-    "get all list" in new WithEmpApplication() {
-      val emp = Employee("sky", "sky@knoldus.com", "knoldus", "Senior Consultant", Some(1))
+    "get all list" in new WithApplication() {
+      val emp = Employee("bob", "bob@xyz.com", "knoldus", "Senior Consultant", Some(1))
       mockedRepo.getAll() returns Future.successful(List(emp))
       val result = employeeController.list().apply(FakeRequest())
       val resultAsString = contentAsString(result)
-      resultAsString === """{"status":"success","data":[{"name":"sky","email":"sky@knoldus.com","companyName":"knoldus","position":"Senior Consultant","id":1}],"msg":"Getting Employee list successfully."}"""
+      resultAsString === """{"status":"success","data":[{"name":"bob","email":"bob@xyz.com","companyName":"knoldus","position":"Senior Consultant","id":1}]}"""
     }
 
   }
 
 }
-
-class WithEmpApplication(implicit mockedRepo: EmployeeRepository) extends WithApplication {
-  val messageAPI = new DefaultMessagesApi(Environment.simple(), app.configuration, new DefaultLangs(app.configuration))
-  val employeeController = new EmployeeController(mockedRepo, messageAPI)
-}
-

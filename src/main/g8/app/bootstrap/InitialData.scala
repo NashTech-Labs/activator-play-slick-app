@@ -5,12 +5,12 @@ import javax.inject.Singleton
 import repo.EmployeeRepository
 import models.Employee
 import java.util.Date
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.{ExecutionContext, Future}
 import play.Logger
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class InitialData @Inject() (employeeRepo: EmployeeRepository) {
+class InitialData @Inject() (employeeRepo: EmployeeRepository)(implicit ec: ExecutionContext) {
 
   def insert = for {
     emps <- employeeRepo.getAll() if (emps.length == 0)
